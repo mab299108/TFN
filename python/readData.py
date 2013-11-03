@@ -80,7 +80,7 @@ while 1:
 
 	count=count+1
 
-	if count == 6:
+	if count == 5:
 		print("averages  at "+getTime())
 		for i in xrange(len(nameList)):
 			#print(typeList[i]+": "+nameList[i]+" - "+takeAverage(i))
