@@ -1,5 +1,6 @@
 import serial
 import datetime
+import pymysql
 
 ser=serial.Serial('/dev/tty.usbmodem1411',9600)
 count = 0
@@ -17,14 +18,26 @@ def addData( vName, vValue ):
 		myData[vName]=float(vValue)
 		myData[vName+"count"]=1
 	pass
-def formatOutput(i):
+
+def takeAverage(i):
 	global myData
 	global nameList
 	myKey = nameList[i]
 	vOut = myData[myKey]/myData[myKey+"count"]
 	myData[myKey] = 0
 	myData[myKey+"count"] = 0
+	print(myKey+str(vOut))
 	return str(vOut)
+
+def returnSum(i):
+	global myData
+	global nameList
+	myKey = nameList[i]
+	vOut = myData[myKey]
+	myData[myKey] = 0
+	myData[myKey+"count"] = 0
+	print(myKey+str(vOut))
+	return str(vOut)	
 
 def getTime():
 	return str(datetime.datetime.now().time())
@@ -36,32 +49,45 @@ def buildLists(vName, vItem):
 		nameList.append(vName)
 		typeList.append(vItem)
 
+def dbaseConn():
+	conn = pymysql.connect(host='localhost',  user='user1', passwd='password1', database='dataLogger')
+	return conn	
+
+def insertTemp(vTemp):
+	conn = dbaseConn()
+	cur = conn.cursor()
+	cur.execute("INSERT into tempData (temp, time) VALUES ("+str(vTemp)+", NOW() )")
+	cur.execute("COMMIT")
+
+def insertFlow(vFlow):
+	conn = dbaseConn()
+	cur = conn.cursor()
+	cur.execute("INSERT into flowData (flow, time) VALUES ("+str(vFlow)+", NOW() )")
+	cur.execute("COMMIT")		
+
 
 print("Starting:"+getTime())
 while 1:
 
-	#print(count)
-
 	SerIn = ser.readline()
 	vItem,vName,vValue = SerIn.split(":")
 	
-	if vItem == "T":
+	if vItem in ["T","F"]:
 		addData( vName, vValue )
-		buildLists(vName, vItem)
-
-	elif vItem == "F":
-		addData( vName, vValue )
-		buildLists(vName, vItem)
-		
+		buildLists(vName, vItem)		
 	else:
 		print("other"+str(SerIn)+ " at "+getTime())	
 
 	count=count+1
 
-	if count == 5:
+	if count == 6:
 		print("averages  at "+getTime())
 		for i in xrange(len(nameList)):
-			print(typeList[i]+": "+nameList[i]+" - "+formatOutput(i))
+			#print(typeList[i]+": "+nameList[i]+" - "+takeAverage(i))
+			if typeList[i] == "T":
+				insertTemp(takeAverage(i))
+			elif typeList[i] == "F":
+				insertFlow(returnSum(i))	
 
 		#print(nameList)
 		count = 0
