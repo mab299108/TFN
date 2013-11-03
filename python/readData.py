@@ -53,16 +53,16 @@ def dbaseConn():
 	conn = pymysql.connect(host='localhost',  user='user1', passwd='password1', database='dataLogger')
 	return conn	
 
-def insertTemp(vTemp):
+def insertTemp(vTemp, vName):
 	conn = dbaseConn()
 	cur = conn.cursor()
-	cur.execute("INSERT into tempData (temp, time) VALUES ("+str(vTemp)+", NOW() )")
+	cur.execute("INSERT into tempData (temp, time, sensor) VALUES ("+str(vTemp)+", NOW(), '"+vName+"' )")
 	cur.execute("COMMIT")
 
-def insertFlow(vFlow):
+def insertFlow(vFlow,  vName):
 	conn = dbaseConn()
 	cur = conn.cursor()
-	cur.execute("INSERT into flowData (flow, time) VALUES ("+str(vFlow)+", NOW() )")
+	cur.execute("INSERT into flowData (flow, time, sensor) VALUES ("+str(vFlow)+", NOW(), '"+vName+"' )")
 	cur.execute("COMMIT")		
 
 
@@ -80,14 +80,14 @@ while 1:
 
 	count=count+1
 
-	if count == 5:
+	if count == 20:
 		print("averages  at "+getTime())
 		for i in xrange(len(nameList)):
 			#print(typeList[i]+": "+nameList[i]+" - "+takeAverage(i))
 			if typeList[i] == "T":
-				insertTemp(takeAverage(i))
+				insertTemp(takeAverage(i), nameList[i])
 			elif typeList[i] == "F":
-				insertFlow(returnSum(i))	
+				insertFlow(returnSum(i), nameList[i])	
 
 		#print(nameList)
 		count = 0
