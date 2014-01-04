@@ -69,3 +69,26 @@ p {
 .legend table {
 	border-spacing: 5px;
 }
+
+.circles-text {
+font-size: 32px !important;
+width: 100% !important;
+padding-left: 15%;
+padding-right: 15%;
+
+}
+#main{min-width:459px}
+.beer_info{float:left;width:70%;min-width:321px}
+.beer_chart{float:left;width:20%;text-align: center;}
+.beer_chart p{text-align: center;}
+.beer_infoHeader{background-color: #CCCCCC; padding-top: 10px; padding-bottom: 10px; margin-right: 20px;}
+
+.beer_info h1, .beer_info h2, .beer_info h3, .beer_info h4, .beer_info h5, .beer_info p {text-align:left;margin-left: 20px;}
+
+.brewSpecs
+{text-align:left;}
+
+.brewDesc
+{text-align:left;font-size: 10pt;}
+h2{text-align:left;padding-left: 5px;}
+.panel-title{text-align:left;}
